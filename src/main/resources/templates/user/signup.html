@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Signup</title>
+</head>
+<body>
+<h1>Signup System</h1>
+<div th:if="${#httpServletRequest.getQueryString != null}">
+  <a th:if="${#strings.contains(#httpServletRequest.getQueryString,'username_error')}" style="color: #ff0000">用户名重复</a>
+  <a th:if="${#strings.contains(#httpServletRequest.getQueryString,'repeat_error')}" style="color: #ff0000">两次输入密码不一致</a>
+  <a th:if="${#strings.contains(#httpServletRequest.getQueryString,'error')}" style="color: #ff0000">请重新输入</a>
+  <!--获得请求参数[[${#httpServletRequest.getQueryString}]]-->
+</div>
+<div>
+
+  <div>
+    Username
+    <input type="text" id="username" name="username" placeholder="Username" onblur="verifyUsername()">
+    <span><a id="username_msg"></a></span><br/>
+  </div>
+  <div>
+    Password
+    <input type="password" id="password" name="password" placeholder="Password" required><br/>
+  </div>
+  <div>
+    Repeat Password
+    <input type="password" id="repeat_password" name="repeat_password" placeholder="Repeat Password" required onblur="verifyPassword()"><br/>
+  </div>
+  <div>
+    <span><a id="code_msg" style="color:red"></a></span><br/>
+    <input type="submit" id="submit" value="Submit" onclick="reg()">
+  </div>
+</div>
+
+<script th:src="@{/jquery-3.6.0.js}" type="text/javascript"></script>
+<script>
+  var username_available = false;
+
+  function verifyUsername() {
+    $.post({
+      url: "/reg/verifyUsername",
+      data: {
+        "username":$("#username").val(),
+      },
+      success: function(res) {
+        var obj = JSON.parse(res);
+        if (obj.msg === 'valid') {
+          $("#username_msg").css("color", "green").html('恭喜你可以使用');
+          username_available = true;
+        } else {
+          $("#username_msg").css("color", "red").html('用户名已存在');
+          username_available = false;
+        }
+      }
+    })
+  }
+
+  function verifyPassword(){
+    var pwd = $("#password").val();
+    var r_pwd = $("#repeat_password").val();
+    if (pwd !== r_pwd) {
+      // $("#submit").attr("disabled",true);
+      $("#code_msg").html('两次输入不一致')
+      return false;
+    } else {
+      // $("#submit").attr("disabled",false);
+      $("#code_msg").html('')
+      return true;
+    }
+  }
+
+  function reg(){
+    var username = $("#username").val();
+    var password = $("#password").val();
+    var repeat_password = $("#repeat_password").val();
+
+    if (password !== repeat_password) {
+      $("#code_msg").html('两次输入不一致')
+      alert('两次输入不一致')
+      location.href = "/toSignup?error";
+      return false;
+    }
+
+
+    if (!username_available) {
+      $("#username_msg").css("color", "red").html('用户名已存在');
+      alert('用户名已存在')
+      location.href = "/toSignup?error";
+      return false;
+    }
+
+    $.post({
+      url: "/user/register",
+      data:{
+        username: username,
+        password: password,
+      },
+      success: function(res) {
+        var obj = JSON.parse(res);
+        console.log(obj.msg)
+        if (obj.msg === "success") {
+          alert("注册成功")
+          location.href = "/toLogin";
+        } else {
+          alert("注册失败")
+          location.href = "/toSignup?error";
+        }
+      }
+    })
+
+
+  }
+</script>
+
+</body>
+</html>

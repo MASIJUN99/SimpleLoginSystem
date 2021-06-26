@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+
+<div sec:authorize="isAuthenticated()">
+  用户名<span sec:authentication="name"></span>
+  角色<span sec:authentication="authorities"></span>
+
+  <!-- admin才能看得到 -->
+  <p sec:authorize="hasRole('admin')">Hello, admin</p>
+  <p sec:authorize="hasRole('root')">Hello, root</p>
+  <p sec:authorize="hasRole('guest')">Hello, guest</p>
+  <p sec:authorize="hasAnyRole('root', 'admin')">Hello, manager</p>
+  <p sec:authorize="not hasAnyRole('root', 'admin')">Hello, normal user</p>
+
+</div>
+
+<div sec:authorize="!isAuthenticated()">
+  <a th:href="@{/toLogin}">Login</a>
+</div>
+
+</body>
+</html>
