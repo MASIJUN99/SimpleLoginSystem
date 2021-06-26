@@ -39,4 +39,4 @@
 
 制作不易，欢迎star~
 
-<img src=".\imgs\readme_zh\9c5a1e35f934933947741c6cfd4954a.jpg" width = "500" height = "500" div align=left/>
+![img](./imgs/readme_zh/9c5a1e35f934933947741c6cfd4954a.jpg)
